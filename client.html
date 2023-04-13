@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Ejemplo Cliente WebSockets</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+    integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+    crossorigin=""/>
+  </head>
+  <body>
+
+    <div>
+        <h1>Ejemplo cliente WebSockets</h1>
+        <p>
+            En este ejemplo nos estamos conectando al servidor usando la API nativa de Javascript <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSocket">WebSocket</a>,
+            enviando el evento <b>JOIN</b> para conectarnos con un usuario de prueba, y suscribiéndonos a los eventos.
+
+            Los eventos recibidos se están mostrando en el div con clase "demo"
+        </p>
+
+        <p>
+            Para el mapa se está usando la librería <a href="https://leafletjs.com/reference.html">LeafLet</a>
+
+            Ante los eventos tipo <b>RESTAURANTS</b> y <b>DESTINATIONS</b>, se agregan marcadores al mapa con la ubicación de cada restaurante y destino:
+        </p>
+    </div>
+
+    <div class="map">
+        <div class="leaflet-map-container" id="mapContainer">
+    </div>
+
+    <div class="demo">
+        Aquí se mostrarán los eventos recibidos
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.js" integrity="sha512-Dqm3h1Y4qiHUjbhxTuBGQsza0Tfppn53SHlu/uj1f+RT+xfShfe7r6czRf5r2NmllO2aKx+tYJgoxboOkn1Scg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script  type='text/javascript'>
+
+        const redIcon = new L.Icon({
+            iconUrl:
+                "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
+            shadowUrl:
+                "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        var restaurants = {}
+        var destinations = {}
+
+        var map = L.map('mapContainer').setView([-33.35, -70.5], 10);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        // Initialize the UI.
+        const demo = document.querySelector(".demo");
+
+        let url = "wss://tarea2-2023-1-dev-z2fqxmm2ja-uc.a.run.app/connect"
+        const websocket = new WebSocket(url);
+        payload = {
+            "type": "JOIN",
+            "payload": {
+                "authorization": 'Basic dGFyZWEyQHRhbGxlcmRlaW50ZWdyYWNpb24uY2w6MTIzNDU2Nzg='
+            }
+        }
+        console.log(`Connecting to: ${url}. Sending: ${payload}`)
+        websocket.onopen = () => websocket.send(JSON.stringify(payload));
+        websocket.addEventListener("message", ({ data }) => {
+            const event = JSON.parse(data);
+            demo.innerHTML = `Got <b>${event.type}</b> event:<br><br>${JSON.stringify(event.payload)}`;
+            if (event.type == 'RESTAURANTS') {
+                // recorremos los restaurantes y agregamos un marker para cada uno:
+                event.payload.forEach(r => {
+                    if (!(r.id in restaurants)) {
+                        restaurants[r.id] = r
+                        var marker = L.marker([r.position.lat, r.position.long])
+                        marker.bindTooltip(r.name);
+                        marker.addTo(map);
+                        // puede ser util guardar la referencia al marker de cada restaurante
+                        r.marker = marker;
+                    }
+                });
+            } else if (event.type == 'DESTINATIONS') {
+                // lo mismo para los destinos
+                event.payload.forEach(d => {
+                    if (!(d.id in destinations)) {
+                        destinations[d.id] = d
+                        var marker = L.marker([d.position.lat, d.position.long], {icon: redIcon})
+                        marker.bindTooltip(d.name);
+                        marker.addTo(map);
+                        d.marker = marker;
+                    }
+                });
+            }
+        });
+
+        // esto fue necesario para resolver un bug de leaflet en el que parte del mapa se veía gris
+        setTimeout(function () {
+            window.dispatchEvent(new Event('resize'));
+        }, 500);
+    </script>
+    <style>
+        .map {
+            height: 400px;
+            width: 600px
+        }
+
+        .leaflet-map-container {
+            height: 400px;
+            max-height: none;
+        }
+
+        .demo {
+            padding-top: 20px
+        }
+    
+    </style>
+  </body>
+</html>

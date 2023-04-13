@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="index.css">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+        integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+        crossorigin=""/>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div>
+            <div class="header-blue">
+                <nav class="navbar navbar-light navbar-expand-md navigation-clean-search">
+                    <button class="btn btn-light btn-lg action-button" onclick="window.location.href='/'" type="button">Jaime Coloma<i class="fa fa-long-arrow-right ml-2"></i></button>
+                        <div class="collapse navbar-collapse"
+                            id="navcol-1">
+                            <ul class="nav navbar-nav">
+                                </li>
+                            </ul>
+                            
+                        </div>
+                </nav>
+                <div class="container hero">
+                    <div class="row">
+                        <div class="col-12 col-lg-6 col-xl-5 offset-xl-1">
+                            <h1>Speedy food</h1>
+                            <p>Mira el mapa de los pedidos del minuto!<br></p>
+                            <button
+                            class="btn btn-light btn-lg action-button" onclick="window.location.href='/'" type="button">Learn More<i class="fa fa-long-arrow-right ml-2"></i></button>
+                        </div>
+                        <div class="map">
+                            <div class="leaflet-map-container" id="mapContainer">
+                            </div>
+                        </div>
+                        <div class="page-content page-container" style="display:flex;align-items: center; justify-content: center;"  id="page-content">
+                            <div class="padding">
+                                <div class="row container d-flex justify-content-center" style="background: #FFFFFF">
+                                <div class="col-md-6">
+                                    <div class="card card-bordered">
+                                      <div class="card-header">
+                                        <h4 class="card-title">Chat</h4>
+                                      </div>
+                                      <div class="ps-container ps-theme-default ps-active-y" id="chat-content" style="overflow-y: scroll !important; height:400px !important;">
+                                        
+                                        <div class="media media-chat media-chat-reverse">
+                                            <div class="media-body">
+                                              <p style="color:white; background: white; margin-left: 300px;">Hiii, I'm good..</p>
+                                            </div>
+                                          </div>
+                        
+                                      <div class="ps-scrollbar-x-rail" style="left: 0px; bottom: 0px;"><div class="ps-scrollbar-x" tabindex="0" style="left: 0px; width: 0px;"></div></div><div class="ps-scrollbar-y-rail" style="top: 0px; height: 0px; right: 2px;"><div class="ps-scrollbar-y" tabindex="0" style="top: 0px; height: 2px;"></div></div></div>
+                        
+                                      <div class="publisher bt-1 border-light">
+                                        <img class="avatar avatar-xs" src="https://img.icons8.com/color/36/000000/administrator-male.png" alt="...">
+                                        <input class="publisher-input"  id="MsgToSend" type="text" placeholder="Write something">
+                                        <span class="publisher-btn file-group">
+                                          <i class="fa fa-paperclip file-browser"></i>
+                                          <input type="file">
+                                        </span>
+                                        <a class="publisher-btn" href="#" data-abc="true"><i class="fa fa-smile"></i></a>
+                                        <a class="publisher-btn text-info" href="#" data-abc="true"><i class="fa fa-paper-plane"></i></a>
+                                      </div>
+                        
+                                     </div>
+                                  </div>
+                                  </div>
+                                  </div>
+                                  </div>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.js" integrity="sha512-Dqm3h1Y4qiHUjbhxTuBGQsza0Tfppn53SHlu/uj1f+RT+xfShfe7r6czRf5r2NmllO2aKx+tYJgoxboOkn1Scg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+                        <div class="col-md-5 col-lg-5 offset-lg-1 offset-xl-0 d-none d-lg-block phone-holder">
+                            <div class="iphone-mockup">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="index.js" async defer></script>
+    </body>
+</html>
