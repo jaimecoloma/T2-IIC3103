@@ -18,30 +18,41 @@
     <body>
         <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
+        <![endif] Bootstrap references: https://bbbootstrap.com/snippets/simple-chat-application-57631463
+        https://bbbootstrap.com/snippets/bootstrap-header-background-images-and-navbar-18342507
+    -->
         <div>
             <div class="header-blue">
                 <nav class="navbar navbar-light navbar-expand-md navigation-clean-search">
                     <button class="btn btn-light btn-lg action-button" onclick="window.location.href='/'" type="button">Jaime Coloma<i class="fa fa-long-arrow-right ml-2"></i></button>
-                        <div class="collapse navbar-collapse"
-                            id="navcol-1">
-                            <ul class="nav navbar-nav">
-                                </li>
-                            </ul>
-                            
-                        </div>
+                        
                 </nav>
                 <div class="container hero">
                     <div class="row">
-                        <div class="col-12 col-lg-6 col-xl-5 offset-xl-1">
-                            <h1>Speedy food</h1>
-                            <p>Mira el mapa de los pedidos del minuto!<br></p>
-                            <button
-                            class="btn btn-light btn-lg action-button" onclick="window.location.href='/'" type="button">Learn More<i class="fa fa-long-arrow-right ml-2"></i></button>
+                        <div class="col-12 col-lg-6 col-xl-5 offset-xl-1" style="display:flex;align-items: center;justify-content: center;">
+                            <h1 style="align-items: center;justify-content: center;">Speedy Meals</h1>
+                        </div>
+                        <p style="margin-left: 14cm;">Mira el mapa de los pedidos del minuto!<br></p>
+                        <p style="margin-left: 12cm;">Haz click sobre el repartidor y descubre el pedido secreto<br></p>
+                        <div>
                         </div>
                         <div class="map">
                             <div class="leaflet-map-container" id="mapContainer">
                             </div>
+                        </div>
+                        <div style="margin-left: 150px; margin-top: 20px;">
+                            <form action="#">
+                                <select  id="Restaurant">
+                                  <option value="Restaurante" disabled selected>Restaurante</option>
+                                </select>
+                                <select  id="Destination">
+                                    <option value="Destino" disabled selected>Destino</option>
+                                  </select>
+                                  <select  id="Dish">
+                                    <option value="Producto" disabled selected>Producto</option>
+                                  </select>
+                                <button type="button"class="button-42" id="orderButton">Crear pedido!</button>
+                          </form>
                         </div>
                         <div class="page-content page-container" style="display:flex;align-items: center; justify-content: center;"  id="page-content">
                             <div class="padding">
@@ -49,7 +60,7 @@
                                 <div class="col-md-6">
                                     <div class="card card-bordered">
                                       <div class="card-header">
-                                        <h4 class="card-title">Chat</h4>
+                                        <img src = 'chat.png' width="50" height="50"/>
                                       </div>
                                       <div class="ps-container ps-theme-default ps-active-y" id="chat-content" style="overflow-y: scroll !important; height:400px !important;">
                                         
@@ -78,8 +89,7 @@
                                   </div>
                                   </div>
                         <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.js" integrity="sha512-Dqm3h1Y4qiHUjbhxTuBGQsza0Tfppn53SHlu/uj1f+RT+xfShfe7r6czRf5r2NmllO2aKx+tYJgoxboOkn1Scg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-                        <div class="col-md-5 col-lg-5 offset-lg-1 offset-xl-0 d-none d-lg-block phone-holder">
-                            <div class="iphone-mockup">
+                        
                                 
                             </div>
                         </div>

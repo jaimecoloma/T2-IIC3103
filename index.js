@@ -1,13 +1,45 @@
-const redIcon = new L.Icon({
-    iconUrl:
-        "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
-    shadowUrl:
-        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-});
+const get_course_ingr = async (id) => {
+    const response_1 = await fetch(`https://tarea-1.2023-1.tallerdeintegracion.cl/ingredients/${id}`)
+    const ingredient = await response_1.json()
+    if (ingredient.id){
+        return ingredient
+    }
+    const response_2 = await fetch(`https://tarea-1.2023-1.tallerdeintegracion.cl/courses/${id}`)
+    const course = await response_2.json()
+    return course
+}
+
+var page = 1
+var sort = "name"
+var order = "asc"
+const get_ingredients = async () => {
+    const response = await fetch(`https://tarea-1.2023-1.tallerdeintegracion.cl/ingredients?page=${page}&size=50&sort=${sort}&order=${order}`)
+    const api_ingredients = await response.json()
+    return api_ingredients
+}
+
+const get_courses = async () => {
+    const response = await fetch(`https://tarea-1.2023-1.tallerdeintegracion.cl/courses?page=${page}&size=50&sort=${sort}&order=${order}`)
+    const api_courses = await response.json()
+    return api_courses
+}
+
+const render_dishes = async () => {
+    const select = document.getElementById("Dish");
+    const courses = await get_courses()
+    select.innerHTML += `<option value="Platos" disabled>Platos</option>`
+    for (let course of courses.items){
+        select.innerHTML  +=`<option value="${course.id}" >${course.name}</option>`
+    }
+    select.innerHTML += `<option value="Ingredientes" disabled>Ingredientes</option>`
+    const ingredients = await get_ingredients()
+    for (let ingredient of ingredients.items){
+        select.innerHTML  += `<option value="${ingredient.id}" >${ingredient.name}</option>`
+    }
+}
+
+render_dishes()
+
 const time = (timestamp)=>{
     const date = new Date(timestamp);
     const hours = ('0' + date.getHours()).slice(-2);
@@ -36,7 +68,6 @@ var destinations = {}
 var deliveries = {}
 var positions = {}
 var users = {}
-
 var map = L.map('mapContainer').setView([-33.42742, -70.60366], 11);
 
 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {foo: 'bar'}).addTo(map);
@@ -54,6 +85,16 @@ websocket.onopen = () => websocket.send(JSON.stringify(payload));
 websocket.addEventListener("message", ({ data }) => {
     const event = JSON.parse(data);
     if (event.type == 'RESTAURANTS') {
+        const select = document.getElementById("Restaurant");
+        if (select.value != "Restaurante"){
+            select.innerHTML=`<select  id="Restaurant">
+            <option value="${select.value}" >${select.selectedOptions[0].textContent}</option>
+            </select>`
+        } else {
+            select.innerHTML=`<select  id="Restaurant">
+            <option value="Restaurante" disabled selected>Restaurante</option>
+            </select>`
+        }
         Object.values(restaurants).forEach(r => {
             map.removeLayer(r.marker)
         })
@@ -64,11 +105,27 @@ websocket.addEventListener("message", ({ data }) => {
         , {})
         Object.values(restaurants).forEach(r => {
                 var marker = L.marker([r.position.lat, r.position.long], {icon: restaurantIcon})
-                marker.bindTooltip(r.name);
+                let str = `<b>${r.name}</b><br>ID: ${r.id}<br>lat: ${r.position.lat}, long: ${r.position.long}`
+                marker.bindTooltip(str);
                 marker.addTo(map);
                 r.marker = marker;
+                const select = document.getElementById("Restaurant");
+                const option = document.createElement("option");
+                option.text = r.name;
+                option.value = r.id;
+                select.appendChild(option);
         });
     } else if (event.type == 'DESTINATIONS') {
+        const select = document.getElementById("Destination");
+        if (select.value != "Destino"){
+            select.innerHTML=`<select  id="Destination">
+            <option value="${select.value}" >${select.selectedOptions[0].textContent}</option>
+          </select>`
+        } else {
+            select.innerHTML=`<select  id="Destination">
+            <option value="Destino" disabled selected>Destino</option>
+            </select>`
+        }
         Object.values(destinations).forEach(d => {
             map.removeLayer(d.marker)
         })
@@ -79,9 +136,15 @@ websocket.addEventListener("message", ({ data }) => {
         , {})
         Object.values(destinations).forEach(d => {
             var marker = L.marker([d.position.lat, d.position.long], {icon: houseIcon})
-            marker.bindTooltip(d.name);
+            let str = `<b>${d.name}</b><br>ID: ${d.id}<br>lat: ${d.position.lat}, long: ${d.position.long}`
+            marker.bindTooltip(str);
             marker.addTo(map);
             d.marker = marker;
+            const select = document.getElementById("Destination");
+            const option = document.createElement("option");
+            option.text = d.name;
+            option.value = d.id;
+            select.appendChild(option);
         });
     } else if (event.type == 'USERS') {
         users = event.payload.reduce((acc, u) => {
@@ -101,7 +164,7 @@ websocket.addEventListener("message", ({ data }) => {
         }
         , {})
         var color_index = 0
-        Object.values(deliveries).forEach(d => {
+        Object.values(deliveries).forEach(async d => {
             deliveries[d.id] = d
             var checker = false
             // creamos un polyline para la ruta
@@ -116,6 +179,8 @@ websocket.addEventListener("message", ({ data }) => {
                 })
                 if (checker == true){// guardar color en dict de deliveries
                     colors = ["#9A77CF", "#543884", "#262254", "#A13670", "#EC4176", "#FFA45E", "green", "yellow", "blue", "red"]
+                    //const course_ingr = await get_course_ingr(d.product_id)
+                    //d.object = course_ingr
                     d.color = colors[color_index]
                     var polyline = L.polyline(latlngs, {color: d.color, weight: 3, opacity: 0.5, smoothFactor: 1})
                     polyline.addTo(map);
@@ -134,9 +199,21 @@ websocket.addEventListener("message", ({ data }) => {
         }
         if (p != null){
             Object.values(deliveries).forEach(d => {
-                if (d.id == p.delivery_id){
+                if (d.id == p.delivery_id && deliveries[p.delivery_id] != null){
                     var marker = L.marker([p.position.lat, p.position.long], {icon: motoIcon})
-                    marker.bindTooltip(p.delivery_id);
+                    d.product = null
+                    marker.on('click', async function() {
+                        // Inside the callback function, use await to make an asynchronous operation
+                        const response = await get_course_ingr(d.product_id);                      
+                        // Log the retrieved data to the console
+                        const popup = L.popup().setContent(`Producto secreto: ${response.name}!`);
+                        d.product = response.name
+                        marker.bindPopup(popup).openPopup();
+                    });
+                    let str = `<b>Delivery ID: ${d.id}</b><br>Restaurante: ${restaurants[d.restaurant_id]?.name}<br>
+                                Destino: ${destinations[d.destination_id]?.name}<br>User: ${users[d.user_id]?.name}<br>
+                                lat: ${p.position.lat}, long: ${p.position.long}`
+                    marker.bindTooltip(str);
                     marker.addTo(map);
                     positions[p.delivery_id] = marker
                     var latlngs = [[restaurants[d.restaurant_id]?.position.lat, restaurants[d.restaurant_id]?.position.long],
@@ -225,12 +302,41 @@ btn.addEventListener('keydown', function(e) {
     }
 });
 
+const orderButton = document.getElementById("orderButton");
+      orderButton.addEventListener("click", placeOrder);
+
+function placeOrder() {
+  const restaurant = document.getElementById("Restaurant").value;
+  const destination = document.getElementById("Destination").value;
+  const meal = document.getElementById("Dish").value;
+  if (restaurant == "Restaurante" || destination == "Destino" || meal == "Producto"){
+    alert("Por favor, debe seleccionar un restaurante, destino y producto")
+    return
+    }
+    send = {
+        type: "ORDER",
+        payload: {restaurant_id: restaurant,
+                  product_id: meal,
+                  destination: destination}
+        }
+    websocket.send(JSON.stringify(send));
+    alert("Pedido creado correctamente! Que lo disfrutes :)")
+    const select_1 = document.getElementById("Restaurant");
+    select_1.innerHTML=`<select  id="Restaurant">
+            <option value="Restaurante" disabled selected>Restaurante</option>
+            </select>`
+    const select_2 = document.getElementById("Destination");
+    select_2.innerHTML=`<select  id="Destination">
+            <option value="Destino" disabled selected>Destino</option>
+            </select>`
+    render_dishes()
+}
 
 function send_message(message){
     send = {
         type: "MESSAGE",
         payload: {content: message}
-        } // CAMBIAR A TOKEN CON MI EMAIL Y NUMERO DE ESTUDIANTE
+        }
     
     websocket.send(JSON.stringify(send));
 }
